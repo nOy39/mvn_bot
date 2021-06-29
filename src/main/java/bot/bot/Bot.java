@@ -1,37 +1,58 @@
-package bot;
+package bot.bot;
 
 import bot.controllers.MessageController;
 import config.TOKEN;
+
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import org.telegram.telegrambots.meta.api.objects.File;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+/**
+ *
+ */
 public class Bot extends TelegramLongPollingBot {
-
+    /**
+     *
+     */
+    //todo https://ru.stackoverflow.com/questions/950294/%D0%9E%D1%82%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B0-%D1%81%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D0%BD%D0%B8%D0%B9-telegram-bot
     MessageController mc = new MessageController();
     @Override
     public String getBotUsername() {
         return "${bot.bot_name}";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getBotToken() {
         return new TOKEN().getTOKEN();
     }
 
+
+    /**
+     *
+     * @param update
+     */
     @Override
     public void onUpdateReceived(Update update) {
         SendMessage message = new SendMessage();
-        //TODO
         if (update.hasMessage()) {
             if (update.hasMessage())
             mc.receiveMessage(update);
@@ -62,20 +83,36 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     *
+     * @param update
+     * @return
+     */
     private String getPath(Update update) {
         String staticPath = "./data/userDoc/";
-        String userIdFolder = update.getMessage().getChat().getId() + "_"
-                            + update.getMessage().getChat().getUserName() + "/";
-        String dateSubfolder = getNow() + "/";
-        return staticPath + userIdFolder + dateSubfolder;
+        String chatID = update.getMessage().getChatId().toString() + "/";
+        String userIdFolder = update.getMessage().getFrom().getId().toString() + "_"
+                            + update.getMessage().getFrom().getUserName() + "/";
+        String dateSubfolder = getCurrentDate() + "/";
+        return staticPath + chatID + userIdFolder + dateSubfolder;
     }
 
-    private String getNow() {
+    /**
+     *
+     * @return
+     */
+    private String getCurrentDate() {
         LocalDateTime ldt = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy", Locale.ENGLISH);
         return formatter.format(ldt);
     }
 
+    /**
+     *
+     * @param document
+     * @return
+     * @throws TelegramApiException
+     */
     private String getFilePath(Document document) throws TelegramApiException {
         GetFile getFile = new GetFile();
         getFile.setFileId(document.getFileId());
@@ -83,11 +120,18 @@ public class Bot extends TelegramLongPollingBot {
         return file.getFilePath();
     }
 
+    /**
+     *TODO Необходимо вынести клавиатуру в отдельный "Интерфейс"
+     * @param message
+     */
     private void sendMessage(SendMessage message) {
+        message.setText("Custom message text");
+        new BotService().makeKeyboard(message);
         try {
             execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
+
 }

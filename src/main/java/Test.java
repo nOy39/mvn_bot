@@ -9,7 +9,7 @@ public class Test {
         LocalDateTime ldt = LocalDateTime.now();
 
         System.out.println(ldt);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy", Locale.ENGLISH);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.ENGLISH);
         System.out.println(formatter.format(ldt));
     }
 }
