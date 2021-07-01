@@ -1,13 +1,22 @@
 package bot.bot;
 
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BotService extends Bot{
+public class BotService{
+
+    /**
+     * Adding keyboardrow
+     * @param message
+     * @return
+     */
+    @NotNull
     public SendMessage makeKeyboard(SendMessage message) {
         // Create ReplyKeyboardMarkup object
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
@@ -33,6 +42,43 @@ public class BotService extends Bot{
         keyboardMarkup.setKeyboard(keyboard);
         // Add it to the message
         message.setReplyMarkup(keyboardMarkup);
+
         return message;
     }
+
+    /**
+     *
+     * @param update
+     */
+    public void checkingMessage(Update update) {
+        System.out.println(update.getMessage().getChatId());
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            update.toString();
+        }
+    }
+
+    //        if (update.hasMessage() && update.getMessage().hasDocument() && update.getMessage().getAnimation() == null) {
+//            Document document = update.getMessage().getDocument();
+//            try {
+//                String uploadedFileId = document.getFileId();
+//                GetFile uploadedFile = new GetFile();
+//                uploadedFile.setFileId(uploadedFileId);
+//
+//                File fileToSave = execute(uploadedFile);
+//                downloadFile(fileToSave, new java.io.File(getPath(update) + document.getFileName()));
+//                System.out.println(fileToSave.hashCode());
+//            } catch (TelegramApiException e) {
+//                e.printStackTrace();
+//            }
+//
+//            message.setText("File uploaded");
+//            message.setChatId(update.getMessage().getChatId().toString());
+//            sendMessage(message);
+//        }
+//        if (update.hasMessage() && update.getMessage().hasText()) {
+//
+//            message.setChatId(update.getMessage().getChatId().toString());
+//            message.setText("Echo: " + update.getMessage().getText());
+//            sendMessage(message);
+//        }
 }
